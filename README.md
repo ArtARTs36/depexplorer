@@ -60,7 +60,8 @@ import (
 )
 
 func main() {
-	deps, _ := depexplorer.Guess("/path/to/package.json")
+	depManager, deps, _ := depexplorer.Guess("/path/to/package.json")
+	fmt.Println(depManager)
 	for _, dep := range deps {
 		fmt.Println(dep.Name, dep.Version.Full)
 	}
