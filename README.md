@@ -60,9 +60,9 @@ import (
 )
 
 func main() {
-	depManager, deps, _ := depexplorer.Guess("/path/to/package.json")
-	fmt.Println(depManager)
-	for _, dep := range deps {
+	file, _ := depexplorer.Guess("/path/to/package.json")
+	fmt.Println(file.DependencyManager)
+	for _, dep := range file.Dependencies {
 		fmt.Println(dep.Name, dep.Version.Full)
 	}
 }
