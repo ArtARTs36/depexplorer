@@ -11,6 +11,8 @@ type File struct {
 
 	DependencyManager DependencyManager
 	Dependencies      []*Dependency
+
+	LanguageVersion *Version
 }
 
 type FileExplorer func(file []byte) (*File, error)

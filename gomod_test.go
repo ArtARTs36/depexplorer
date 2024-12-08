@@ -14,16 +14,24 @@ go 1.23.3
 
 require golang.org/x/mod v0.22.0`
 
-	expected := []*depexplorer.Dependency{
-		{
-			Name: "golang.org/x/mod",
-			Version: depexplorer.Version{
-				Full: "v0.22.0",
+	expected := &depexplorer.File{
+		Name:              "go.mod",
+		Path:              "go.mod",
+		DependencyManager: depexplorer.DependencyManagerGoMod,
+		Dependencies: []*depexplorer.Dependency{
+			{
+				Name: "golang.org/x/mod",
+				Version: depexplorer.Version{
+					Full: "v0.22.0",
+				},
 			},
+		},
+		LanguageVersion: &depexplorer.Version{
+			Full: "1.23.3",
 		},
 	}
 
 	got, err := depexplorer.ExploreGoMod([]byte(gomod))
 	require.NoError(t, err)
-	assert.Equal(t, expected, got.Dependencies)
+	assert.Equal(t, expected, got)
 }
