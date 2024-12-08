@@ -74,5 +74,6 @@ func exploreGuessedFile(guessed *guessedFile, contentExplorer fileContentExplore
 		Path:              guessed.Path,
 		DependencyManager: guessed.DependencyManager,
 		Dependencies:      deps.Dependencies,
+		Language:          deps.Language,
 	}, nil
 }
