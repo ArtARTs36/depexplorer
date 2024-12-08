@@ -14,7 +14,17 @@ type Repository struct {
 	Repo  string
 }
 
-func ScanRepository(ctx context.Context, client *github.Client, repository Repository) (*depexplorer.File, error) {
+func ScanRepository(
+	ctx context.Context,
+	client *github.Client,
+	repository Repository,
+	logger Logger,
+) (*depexplorer.File, error) {
+	logger.Printf("listing repository files", map[string]string{
+		"repo_owner": repository.Owner,
+		"repo_name":  repository.Repo,
+	})
+
 	_, files, _, err := client.Repositories.GetContents(
 		ctx,
 		repository.Owner,
@@ -26,5 +36,5 @@ func ScanRepository(ctx context.Context, client *github.Client, repository Repos
 		return nil, fmt.Errorf("failed to list repository files: %w", err)
 	}
 
-	return depexplorer.ScanProject(newFileIterator(repository, ctx, files, client))
+	return depexplorer.ScanProject(newFileIterator(repository, ctx, files, client, logger))
 }

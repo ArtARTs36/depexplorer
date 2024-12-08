@@ -13,6 +13,7 @@ type fileIterator struct {
 	ctx        context.Context
 	files      []*github.RepositoryContent
 	client     *github.Client
+	logger     Logger
 
 	index int
 }
@@ -22,6 +23,7 @@ func newFileIterator(
 	ctx context.Context,
 	files []*github.RepositoryContent,
 	client *github.Client,
+	logger Logger,
 ) *fileIterator {
 	return &fileIterator{
 		repository: repository,
@@ -29,6 +31,7 @@ func newFileIterator(
 		files:      files,
 		client:     client,
 		index:      -1,
+		logger:     logger,
 	}
 }
 
@@ -55,6 +58,12 @@ func (i *fileIterator) Read() ([]byte, error) {
 	if filepath == nil {
 		return nil, fmt.Errorf("file with index %d must have filepath", i.index)
 	}
+
+	i.logger.Printf("get file contents", map[string]interface{}{
+		"repo_owner":    i.repository.Owner,
+		"repo_name":     i.repository.Repo,
+		"repo_filepath": *filepath,
+	})
 
 	file, _, _, err := i.client.Repositories.GetContents(i.ctx, i.repository.Owner, i.repository.Repo, *filepath, nil)
 	if err != nil {
