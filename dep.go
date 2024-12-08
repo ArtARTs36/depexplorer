@@ -9,6 +9,16 @@ const (
 	DependencyManagerNPM      DependencyManager = "npm"
 )
 
+type File struct {
+	Path string
+	Name string
+
+	DependencyManager DependencyManager
+	Dependencies      []*Dependency
+
+	LanguageVersion *Version
+}
+
 type Dependency struct {
 	Name    string
 	Version Version
