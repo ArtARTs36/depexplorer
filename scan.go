@@ -2,25 +2,74 @@ package depexplorer
 
 import (
 	"errors"
+	"fmt"
+	"io"
 	"os"
+
 	"path/filepath"
 )
 
+type ProjectFileIterator interface {
+	Next() (string, error) // filepath, error
+	Read() ([]byte, error)
+}
+
+type dirProjectFileIterator struct {
+	dir string
+
+	items []os.DirEntry
+	index int
+	path  string
+}
+
+func newDirProjectFileIterator(dir string) (*dirProjectFileIterator, error) {
+	items, err := os.ReadDir(dir)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read directory %s: %w", dir, err)
+	}
+
+	it := &dirProjectFileIterator{dir: dir, items: items, index: -1}
+	return it, nil
+}
+
+func (i *dirProjectFileIterator) Next() (string, error) {
+	for i.index < len(i.items) {
+		i.index++
+
+		item := i.items[i.index]
+		if item.IsDir() {
+			continue
+		}
+
+		i.path = filepath.Join(i.dir, item.Name())
+
+		return i.path, nil
+	}
+
+	return "", io.EOF
+}
+
+func (i *dirProjectFileIterator) Read() ([]byte, error) {
+	if i.index >= len(i.items) {
+		return nil, io.EOF
+	}
+
+	return os.ReadFile(i.path)
+}
+
 func ScanProjectDir(dir string) (*File, error) {
-	entries, err := os.ReadDir(dir)
+	it, err := newDirProjectFileIterator(dir)
 	if err != nil {
 		return nil, err
 	}
 
+	return ScanProject(it)
+}
+
+func ScanProject(files ProjectFileIterator) (*File, error) {
 	var guessFile *guessedFile
 
-	for _, entry := range entries {
-		if entry.IsDir() {
-			continue
-		}
-
-		path := filepath.Join(dir, entry.Name())
-
+	for path, err := files.Next(); err != io.EOF; path, err = files.Next() {
 		var guessErr error
 		guessFile, guessErr = guess(path)
 		if guessErr != nil {
