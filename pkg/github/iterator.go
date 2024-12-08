@@ -59,7 +59,7 @@ func (i *fileIterator) Read() ([]byte, error) {
 		return nil, fmt.Errorf("file with index %d must have filepath", i.index)
 	}
 
-	i.logger.Printf("get file contents", map[string]interface{}{
+	i.logger("get file contents", map[string]interface{}{
 		"repo_owner":    i.repository.Owner,
 		"repo_name":     i.repository.Repo,
 		"repo_filepath": *filepath,

@@ -20,7 +20,7 @@ func ScanRepository(
 	repository Repository,
 	logger Logger,
 ) (*depexplorer.File, error) {
-	logger.Printf("listing repository files", map[string]string{
+	logger("listing repository files", map[string]string{
 		"repo_owner": repository.Owner,
 		"repo_name":  repository.Repo,
 	})
