@@ -22,8 +22,8 @@ import (
 
 func main() {
 	file, _ := os.ReadFile("/path/to/mod")
-	deps, _ := depexplorer.ExploreGoMod(file)
-	for _, dep := range deps {
+	depFile, _ := depexplorer.ExploreGoMod(file)
+	for _, dep := range depFile.Dependencies {
 		fmt.Println(dep.Name, dep.Version.Full)
 	}
 }
@@ -41,8 +41,8 @@ import (
 )
 
 func main() {
-	deps, _ := depexplorer.Explore("/path/to/mod", depexplorer.ExploreGoMod)
-	for _, dep := range deps {
+	depFile, _ := depexplorer.Explore("/path/to/mod", depexplorer.ExploreGoMod)
+	for _, dep := range depFile.Dependencies {
 		fmt.Println(dep.Name, dep.Version.Full)
 	}
 }

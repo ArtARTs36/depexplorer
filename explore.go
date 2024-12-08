@@ -5,6 +5,14 @@ import (
 	"os"
 )
 
+type File struct {
+	Path string
+	Name string
+
+	DependencyManager DependencyManager
+	Dependencies      []*Dependency
+}
+
 type FileExplorer func(file []byte) (*File, error)
 
 func Explore(path string, explorer FileExplorer) (*File, error) {

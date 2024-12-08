@@ -6,14 +6,6 @@ import (
 	"path/filepath"
 )
 
-type File struct {
-	Path string
-	Name string
-
-	DependencyManager DependencyManager
-	Dependencies      []*Dependency
-}
-
 func ScanProjectDir(dir string) (*File, error) {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
