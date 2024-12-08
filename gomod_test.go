@@ -26,8 +26,11 @@ require golang.org/x/mod v0.22.0`
 				},
 			},
 		},
-		LanguageVersion: &depexplorer.Version{
-			Full: "1.23.3",
+		Language: depexplorer.Language{
+			Name: depexplorer.LanguageNameGo,
+			Version: &depexplorer.Version{
+				Full: "1.23.3",
+			},
 		},
 	}
 

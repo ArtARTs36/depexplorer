@@ -46,6 +46,9 @@ func ExplorePackageJSON(file []byte) (*File, error) {
 		Path:              "package.json",
 		DependencyManager: DependencyManagerNPM,
 		Dependencies:      result,
+		Language: Language{
+			Name: LanguageNameJS,
+		},
 	}, nil
 }
 
@@ -90,5 +93,8 @@ func ExplorePackageLockJSON(file []byte) (*File, error) {
 		Path:              "package-lock.json",
 		DependencyManager: DependencyManagerNPM,
 		Dependencies:      result,
+		Language: Language{
+			Name: LanguageNameJS,
+		},
 	}, nil
 }

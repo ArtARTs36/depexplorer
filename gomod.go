@@ -26,8 +26,11 @@ func ExploreGoMod(file []byte) (*File, error) {
 		Path:              "go.mod",
 		DependencyManager: DependencyManagerGoMod,
 		Dependencies:      deps,
-		LanguageVersion: &Version{
-			Full: mod.Go.Version,
+		Language: Language{
+			Name: LanguageNameGo,
+			Version: &Version{
+				Full: mod.Go.Version,
+			},
 		},
 	}, nil
 }

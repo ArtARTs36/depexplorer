@@ -31,8 +31,11 @@ func TestExploreComposer(t *testing.T) {
 				Version: depexplorer.Version{Full: "^9.5"},
 			},
 		},
-		LanguageVersion: &depexplorer.Version{
-			Full: "8.1",
+		Language: depexplorer.Language{
+			Name: depexplorer.LanguageNamePHP,
+			Version: &depexplorer.Version{
+				Full: "8.1",
+			},
 		},
 	}
 
@@ -64,8 +67,11 @@ func TestExploreComposerLock(t *testing.T) {
 				Version: depexplorer.Version{Full: "7.1"},
 			},
 		},
-		LanguageVersion: &depexplorer.Version{
-			Full: "8.1",
+		Language: depexplorer.Language{
+			Name: depexplorer.LanguageNamePHP,
+			Version: &depexplorer.Version{
+				Full: "8.1",
+			},
 		},
 	}
 

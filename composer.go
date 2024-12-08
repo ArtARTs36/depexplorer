@@ -81,7 +81,10 @@ func ExploreComposerJSON(file []byte) (*File, error) {
 		Path:              "composer.json",
 		DependencyManager: DependencyManagerComposer,
 		Dependencies:      result,
-		LanguageVersion:   findPHPVersionInComposerJSON(definition),
+		Language: Language{
+			Name:    LanguageNamePHP,
+			Version: findPHPVersionInComposerJSON(definition),
+		},
 	}, nil
 }
 
@@ -117,6 +120,9 @@ func ExploreComposerLock(file []byte) (*File, error) {
 		Path:              "composer.lock",
 		DependencyManager: DependencyManagerComposer,
 		Dependencies:      result,
-		LanguageVersion:   phpVersion,
+		Language: Language{
+			Name:    LanguageNamePHP,
+			Version: phpVersion,
+		},
 	}, nil
 }
