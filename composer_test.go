@@ -10,25 +10,66 @@ func TestExploreComposer(t *testing.T) {
 	file := `{
     "name": "artarts36/local-file-system",
     "require": {
-        "artarts36/file-system-contracts": "^0.2.0"
+		"php": "8.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5"
     }
 }`
 
-	expected := []*depexplorer.Dependency{
-		{
-			Name:    "artarts36/file-system-contracts",
-			Version: depexplorer.Version{Full: "^0.2.0"},
+	expected := &depexplorer.File{
+		Name:              "composer.json",
+		Path:              "composer.json",
+		DependencyManager: depexplorer.DependencyManagerComposer,
+		Dependencies: []*depexplorer.Dependency{
+			{
+				Name:    "php",
+				Version: depexplorer.Version{Full: "8.1"},
+			},
+			{
+				Name:    "phpunit/phpunit",
+				Version: depexplorer.Version{Full: "^9.5"},
+			},
 		},
-		{
-			Name:    "phpunit/phpunit",
-			Version: depexplorer.Version{Full: "^9.5"},
+		LanguageVersion: &depexplorer.Version{
+			Full: "8.1",
 		},
 	}
 
 	got, err := depexplorer.ExploreComposerJSON([]byte(file))
 	require.NoError(t, err)
-	require.Equal(t, expected, got.Dependencies)
+	require.Equal(t, expected, got)
+}
+
+func TestExploreComposerLock(t *testing.T) {
+	file := `{
+    "packages": [
+        {
+            "name": "phpunit/phpunit",
+			"version": "7.1"
+		}
+	],
+	"platform": {
+		"php": "8.1"
+	}
+}`
+
+	expected := &depexplorer.File{
+		Name:              "composer.lock",
+		Path:              "composer.lock",
+		DependencyManager: depexplorer.DependencyManagerComposer,
+		Dependencies: []*depexplorer.Dependency{
+			{
+				Name:    "phpunit/phpunit",
+				Version: depexplorer.Version{Full: "7.1"},
+			},
+		},
+		LanguageVersion: &depexplorer.Version{
+			Full: "8.1",
+		},
+	}
+
+	got, err := depexplorer.ExploreComposerLock([]byte(file))
+	require.NoError(t, err)
+	require.Equal(t, expected, got)
 }

@@ -5,9 +5,15 @@ import (
 	"fmt"
 )
 
+const composerPHPDependency = "php"
+
 type composerJSON struct {
 	Require    map[string]string `json:"require"`
 	RequireDev map[string]string `json:"require-dev"`
+
+	Config struct {
+		Platform map[string]string `json:"platform"`
+	} `json:"config"`
 }
 
 type composerLock struct {
@@ -15,6 +21,32 @@ type composerLock struct {
 		Name    string `json:"name"`
 		Version string `json:"version"`
 	} `json:"packages"`
+	Platform map[string]string `json:"platform"`
+}
+
+func findPHPVersionInComposerJSON(definition composerJSON) *Version {
+	v := definition.Config.Platform[composerPHPDependency]
+	if v != "" {
+		return &Version{
+			Full: v,
+		}
+	}
+
+	v = definition.Require[composerPHPDependency]
+	if v != "" {
+		return &Version{
+			Full: v,
+		}
+	}
+
+	v = definition.RequireDev[composerPHPDependency]
+	if v != "" {
+		return &Version{
+			Full: v,
+		}
+	}
+
+	return nil
 }
 
 func ExploreComposerJSON(file []byte) (*File, error) {
@@ -49,6 +81,7 @@ func ExploreComposerJSON(file []byte) (*File, error) {
 		Path:              "composer.json",
 		DependencyManager: DependencyManagerComposer,
 		Dependencies:      result,
+		LanguageVersion:   findPHPVersionInComposerJSON(definition),
 	}, nil
 }
 
@@ -60,17 +93,8 @@ func ExploreComposerLock(file []byte) (*File, error) {
 		return nil, fmt.Errorf("unable to parse composer definition: %w", err)
 	}
 
-	if len(definition.Packages) < 1 {
-		return &File{
-			Name:              "composer.lock",
-			Path:              "composer.lock",
-			DependencyManager: DependencyManagerComposer,
-			Dependencies:      make([]*Dependency, 0),
-		}, nil
-	}
-
-	result := make([]*Dependency, 0, len(definition.Packages)-1)
-	for i := 1; i < len(definition.Packages); i++ {
+	result := make([]*Dependency, 0, len(definition.Packages))
+	for i := 0; i < len(definition.Packages); i++ {
 		pkg := definition.Packages[i]
 
 		result = append(result, &Dependency{
@@ -81,10 +105,18 @@ func ExploreComposerLock(file []byte) (*File, error) {
 		})
 	}
 
+	var phpVersion *Version
+	if pVersion := definition.Platform["php"]; pVersion != "" {
+		phpVersion = &Version{
+			Full: pVersion,
+		}
+	}
+
 	return &File{
 		Name:              "composer.lock",
 		Path:              "composer.lock",
 		DependencyManager: DependencyManagerComposer,
 		Dependencies:      result,
+		LanguageVersion:   phpVersion,
 	}, nil
 }
