@@ -66,6 +66,12 @@ func ScanProjectDir(dir string) (*File, error) {
 	return ScanProject(it)
 }
 
+func bytesContentExplorer(bytes []byte) fileContentExplorer {
+	return func(_ string, explorer FileExplorer) (*File, error) {
+		return explorer(bytes)
+	}
+}
+
 func ScanProject(files ProjectFileIterator) (*File, error) {
 	var guessFile *guessedFile
 
@@ -85,5 +91,10 @@ func ScanProject(files ProjectFileIterator) (*File, error) {
 		return nil, errors.New("no dependency files found")
 	}
 
-	return exploreGuessedFile(guessFile)
+	fileContent, err := files.Read()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read file %q: %w", guessFile.Path, err)
+	}
+
+	return exploreGuessedFile(guessFile, bytesContentExplorer(fileContent))
 }

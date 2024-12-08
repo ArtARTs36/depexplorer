@@ -74,5 +74,10 @@ func (i *fileIterator) Read() ([]byte, error) {
 		return nil, fmt.Errorf("file with index %d must have content", i.index)
 	}
 
-	return []byte(*file.Content), nil
+	fileContent, err := file.GetContent()
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode file %q: %v", *filepath, err)
+	}
+
+	return []byte(fileContent), nil
 }

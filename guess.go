@@ -20,7 +20,7 @@ func Guess(path string) (*File, error) {
 		return nil, err
 	}
 
-	return exploreGuessedFile(guessed)
+	return exploreGuessedFile(guessed, Explore)
 }
 
 func guess(path string) (*guessedFile, error) {
@@ -59,8 +59,8 @@ func guess(path string) (*guessedFile, error) {
 	return guessed, nil
 }
 
-func exploreGuessedFile(guessed *guessedFile) (*File, error) {
-	deps, err := Explore(guessed.Path, guessed.Explorer)
+func exploreGuessedFile(guessed *guessedFile, contentExplorer fileContentExplorer) (*File, error) {
+	deps, err := contentExplorer(guessed.Path, guessed.Explorer)
 	if err != nil {
 		return &File{
 			Name:              guessed.Name,
