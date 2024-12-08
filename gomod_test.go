@@ -25,5 +25,5 @@ require golang.org/x/mod v0.22.0`
 
 	got, err := depexplorer.ExploreGoMod([]byte(gomod))
 	require.NoError(t, err)
-	assert.Equal(t, expected, got)
+	assert.Equal(t, expected, got.Dependencies)
 }

@@ -30,5 +30,5 @@ func TestExploreComposer(t *testing.T) {
 
 	got, err := depexplorer.ExploreComposerJSON([]byte(file))
 	require.NoError(t, err)
-	require.Equal(t, expected, got)
+	require.Equal(t, expected, got.Dependencies)
 }

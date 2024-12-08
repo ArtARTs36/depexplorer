@@ -14,7 +14,7 @@ type File struct {
 	Dependencies      []*Dependency
 }
 
-func ScanProject(dir string) (*File, error) {
+func ScanProjectDir(dir string) (*File, error) {
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err

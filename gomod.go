@@ -5,7 +5,7 @@ import (
 	"golang.org/x/mod/modfile"
 )
 
-func ExploreGoMod(file []byte) ([]*Dependency, error) {
+func ExploreGoMod(file []byte) (*File, error) {
 	mod, err := modfile.ParseLax("go.mod", file, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse go.mod: %w", err)
@@ -21,5 +21,10 @@ func ExploreGoMod(file []byte) ([]*Dependency, error) {
 		}
 	}
 
-	return deps, nil
+	return &File{
+		Name:              "go.mod",
+		Path:              "go.mod",
+		DependencyManager: DependencyManagerGoMod,
+		Dependencies:      deps,
+	}, nil
 }

@@ -14,7 +14,7 @@ type packageLock struct {
 	Packages map[string]packageJSON `json:"packages"`
 }
 
-func ExplorePackageJSON(file []byte) ([]*Dependency, error) {
+func ExplorePackageJSON(file []byte) (*File, error) {
 	var definition packageJSON
 
 	err := json.Unmarshal(file, &definition)
@@ -41,10 +41,15 @@ func ExplorePackageJSON(file []byte) ([]*Dependency, error) {
 		addDep(name, version)
 	}
 
-	return result, nil
+	return &File{
+		Name:              "package.json",
+		Path:              "package.json",
+		DependencyManager: DependencyManagerNPM,
+		Dependencies:      result,
+	}, nil
 }
 
-func ExplorePackageLockJSON(file []byte) ([]*Dependency, error) {
+func ExplorePackageLockJSON(file []byte) (*File, error) {
 	var definition packageLock
 
 	err := json.Unmarshal(file, &definition)
@@ -80,5 +85,10 @@ func ExplorePackageLockJSON(file []byte) ([]*Dependency, error) {
 		addDep(name, version)
 	}
 
-	return result, nil
+	return &File{
+		Name:              "package-lock.json",
+		Path:              "package-lock.json",
+		DependencyManager: DependencyManagerNPM,
+		Dependencies:      result,
+	}, nil
 }

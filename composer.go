@@ -17,7 +17,7 @@ type composerLock struct {
 	} `json:"packages"`
 }
 
-func ExploreComposerJSON(file []byte) ([]*Dependency, error) {
+func ExploreComposerJSON(file []byte) (*File, error) {
 	var definition composerJSON
 
 	err := json.Unmarshal(file, &definition)
@@ -44,10 +44,15 @@ func ExploreComposerJSON(file []byte) ([]*Dependency, error) {
 		addDep(name, version)
 	}
 
-	return result, nil
+	return &File{
+		Name:              "composer.json",
+		Path:              "composer.json",
+		DependencyManager: DependencyManagerComposer,
+		Dependencies:      result,
+	}, nil
 }
 
-func ExploreComposerLock(file []byte) ([]*Dependency, error) {
+func ExploreComposerLock(file []byte) (*File, error) {
 	var definition composerLock
 
 	err := json.Unmarshal(file, &definition)
@@ -56,7 +61,12 @@ func ExploreComposerLock(file []byte) ([]*Dependency, error) {
 	}
 
 	if len(definition.Packages) < 1 {
-		return []*Dependency{}, nil
+		return &File{
+			Name:              "composer.lock",
+			Path:              "composer.lock",
+			DependencyManager: DependencyManagerComposer,
+			Dependencies:      make([]*Dependency, 0),
+		}, nil
 	}
 
 	result := make([]*Dependency, 0, len(definition.Packages)-1)
@@ -71,5 +81,10 @@ func ExploreComposerLock(file []byte) ([]*Dependency, error) {
 		})
 	}
 
-	return result, nil
+	return &File{
+		Name:              "composer.lock",
+		Path:              "composer.lock",
+		DependencyManager: DependencyManagerComposer,
+		Dependencies:      result,
+	}, nil
 }

@@ -8,7 +8,7 @@ import (
 )
 
 func TestScanProjectThisRepository(t *testing.T) {
-	file, err := depexplorer.ScanProject("./")
+	file, err := depexplorer.ScanProjectDir("./")
 	require.NoError(t, err)
 	assert.Equal(t, "go.mod", file.Name)
 	assert.Equal(t, depexplorer.DependencyManagerGoMod, file.DependencyManager)

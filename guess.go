@@ -73,6 +73,6 @@ func exploreGuessedFile(guessed *guessedFile) (*File, error) {
 		Name:              guessed.Name,
 		Path:              guessed.Path,
 		DependencyManager: guessed.DependencyManager,
-		Dependencies:      deps,
+		Dependencies:      deps.Dependencies,
 	}, nil
 }
