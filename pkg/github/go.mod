@@ -5,6 +5,7 @@ go 1.23.3
 require (
 	github.com/artarts36/depexplorer v0.0.0-20241208200211-c1a4142c8f7b
 	github.com/google/go-github v17.0.0+incompatible
+	github.com/google/go-github/v67 v67.0.0
 	github.com/stretchr/testify v1.10.0
 )
 

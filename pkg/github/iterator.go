@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v67/github"
 )
 
 type fileIterator struct {

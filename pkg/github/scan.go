@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v67/github"
 
 	"github.com/artarts36/depexplorer"
 )
