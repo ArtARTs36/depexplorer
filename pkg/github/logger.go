@@ -1,9 +1,7 @@
 package github
 
-type Logger interface {
-	Printf(string, map[string]interface{})
+type Logger func(string, map[string]interface{})
+
+func NoopLogger() Logger {
+	return func(string, map[string]interface{}) {}
 }
-
-type NoopLogger struct{}
-
-func (NoopLogger) Printf(string, map[string]interface{}) {}
