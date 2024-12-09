@@ -11,7 +11,7 @@ import (
 
 type ProjectFileIterator interface {
 	Next() (string, error) // filepath, error
-	Read() ([]byte, error)
+	Read(filepath string) ([]byte, error)
 }
 
 type dirProjectFileIterator struct {
@@ -19,7 +19,6 @@ type dirProjectFileIterator struct {
 
 	items []os.DirEntry
 	index int
-	path  string
 }
 
 func newDirProjectFileIterator(dir string) (*dirProjectFileIterator, error) {
@@ -41,20 +40,14 @@ func (i *dirProjectFileIterator) Next() (string, error) {
 			continue
 		}
 
-		i.path = filepath.Join(i.dir, item.Name())
-
-		return i.path, nil
+		return filepath.Join(i.dir, item.Name()), nil
 	}
 
 	return "", io.EOF
 }
 
-func (i *dirProjectFileIterator) Read() ([]byte, error) {
-	if i.index >= len(i.items) {
-		return nil, io.EOF
-	}
-
-	return os.ReadFile(i.path)
+func (i *dirProjectFileIterator) Read(filepath string) ([]byte, error) {
+	return os.ReadFile(filepath)
 }
 
 func ScanProjectDir(dir string) (*File, error) {
@@ -91,7 +84,7 @@ func ScanProject(files ProjectFileIterator) (*File, error) {
 		return nil, errors.New("no dependency files found")
 	}
 
-	fileContent, err := files.Read()
+	fileContent, err := files.Read(guessFile.Path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read file %q: %w", guessFile.Path, err)
 	}

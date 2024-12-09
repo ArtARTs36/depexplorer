@@ -1,37 +1,29 @@
 package github
 
 import (
-	"context"
 	"fmt"
 	"io"
 
 	"github.com/google/go-github/v67/github"
 )
 
+type fileLoader func(path string) (*github.RepositoryContent, error)
+
 type fileIterator struct {
-	repository Repository
-	ctx        context.Context
 	files      []*github.RepositoryContent
-	client     *github.Client
-	logger     Logger
+	fileLoader fileLoader
 
 	index int
 }
 
 func newFileIterator(
-	repository Repository,
-	ctx context.Context,
 	files []*github.RepositoryContent,
-	client *github.Client,
-	logger Logger,
+	fileLoader fileLoader,
 ) *fileIterator {
 	return &fileIterator{
-		repository: repository,
-		ctx:        ctx,
 		files:      files,
-		client:     client,
 		index:      -1,
-		logger:     logger,
+		fileLoader: fileLoader,
 	}
 }
 
@@ -49,34 +41,15 @@ func (i *fileIterator) Next() (string, error) {
 	return *filename, nil
 }
 
-func (i *fileIterator) Read() ([]byte, error) {
-	if i.index >= len(i.files)-1 {
-		return nil, io.EOF
-	}
-
-	filepath := i.files[i.index].Path
-	if filepath == nil {
-		return nil, fmt.Errorf("file with index %d must have filepath", i.index)
-	}
-
-	i.logger("get file contents", map[string]interface{}{
-		"repo_owner":    i.repository.Owner,
-		"repo_name":     i.repository.Repo,
-		"repo_filepath": *filepath,
-	})
-
-	file, _, _, err := i.client.Repositories.GetContents(i.ctx, i.repository.Owner, i.repository.Repo, *filepath, nil)
+func (i *fileIterator) Read(filepath string) ([]byte, error) {
+	file, err := i.fileLoader(filepath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get contents for file %q: %v", *filepath, err)
-	}
-
-	if file.Content == nil {
-		return nil, fmt.Errorf("file with index %d must have content", i.index)
+		return nil, fmt.Errorf("failed to load file: %w", err)
 	}
 
 	fileContent, err := file.GetContent()
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode file %q: %v", *filepath, err)
+		return nil, fmt.Errorf("failed to decode file %q: %v", filepath, err)
 	}
 
 	return []byte(fileContent), nil

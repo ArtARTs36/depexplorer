@@ -14,9 +14,6 @@ jobs:
     name: code-lint
     runs-on: ubuntu-latest
     steps:
-      - name: install deps
-        run: sudo apt install gcc
-
       - name: Check out code
         uses: actions/checkout@v3
 
@@ -39,9 +36,6 @@ jobs:
     name: unit-test
     runs-on: ubuntu-latest
     steps:
-      - name: install deps
-        run: sudo apt install gcc
-
       - name: Check out code
         uses: actions/checkout@v3
 
