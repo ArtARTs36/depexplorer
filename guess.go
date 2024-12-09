@@ -35,28 +35,29 @@ func guess(path string) (*guessedFile, error) {
 		guessed.DependencyManager = DependencyManagerComposer
 		guessed.Explorer = ExploreComposerLock
 		guessed.IsLockFile = true
+		return guessed, nil
 	case "composer.json":
 		guessed.DependencyManager = DependencyManagerComposer
 		guessed.Explorer = ExploreComposerJSON
 		guessed.CanHaveLockFile = true
+		return guessed, nil
 	case "go.mod":
 		guessed.DependencyManager = DependencyManagerGoMod
 		guessed.Explorer = ExploreGoMod
+		return guessed, nil
 	case "package.json":
 		guessed.DependencyManager = DependencyManagerNPM
 		guessed.Explorer = ExplorePackageJSON
 		guessed.CanHaveLockFile = true
+		return guessed, nil
 	case "package-lock.json":
 		guessed.DependencyManager = DependencyManagerNPM
 		guessed.Explorer = ExplorePackageLockJSON
 		guessed.IsLockFile = true
+		return guessed, nil
 	}
 
-	if guessed.Explorer == nil {
-		return guessed, fmt.Errorf("could not guess dependency from %s", path)
-	}
-
-	return guessed, nil
+	return nil, fmt.Errorf("could not guess dependency from %s", path)
 }
 
 func exploreGuessedFile(guessed *guessedFile, contentExplorer fileContentExplorer) (*File, error) {
