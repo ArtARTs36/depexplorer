@@ -3,15 +3,16 @@ package depexplorer
 import (
 	"encoding/json"
 	"fmt"
+	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
 type packageJSON struct {
-	Dependencies    map[string]string `json:"dependencies"`
-	DevDependencies map[string]string `json:"devDependencies"`
+	Dependencies    orderedmap.OrderedMap[string, string] `json:"dependencies"`
+	DevDependencies orderedmap.OrderedMap[string, string] `json:"devDependencies"`
 }
 
 type packageLock struct {
-	Packages map[string]packageJSON `json:"packages"`
+	Packages orderedmap.OrderedMap[string, packageJSON] `json:"packages"`
 }
 
 func ExplorePackageJSON(file []byte) (*File, error) {
@@ -26,20 +27,15 @@ func ExplorePackageJSON(file []byte) (*File, error) {
 		Name:              "package.json",
 		Path:              "package.json",
 		DependencyManager: DependencyManagerNPM,
-		Dependencies:      make([]*Dependency, 0, len(definition.Dependencies)+len(definition.DevDependencies)),
+		Dependencies:      make([]*Dependency, 0, definition.Dependencies.Len()+definition.DevDependencies.Len()),
 		Language: Language{
 			Name: LanguageNameJS,
 		},
 		Frameworks: make([]*Framework, 0),
 	}
 
-	for name, version := range definition.Dependencies {
-		depFile.addDependency(name, version)
-	}
-
-	for name, version := range definition.DevDependencies {
-		depFile.addDependency(name, version)
-	}
+	depFile.addDependenciesFromOrderedMap(definition.Dependencies)
+	depFile.addDependenciesFromOrderedMap(definition.DevDependencies)
 
 	return depFile, nil
 }
@@ -52,11 +48,11 @@ func ExplorePackageLockJSON(file []byte) (*File, error) {
 		return nil, fmt.Errorf("unable to parse npm definition: %w", err)
 	}
 
-	if len(definition.Packages) == 0 {
+	if definition.Packages.Len() == 0 {
 		return nil, fmt.Errorf("no packages found in npm definition")
 	}
 
-	pkg, ok := definition.Packages[""]
+	pkg, ok := definition.Packages.Get("")
 	if !ok {
 		return nil, fmt.Errorf("no root package found in npm definition")
 	}
@@ -65,30 +61,15 @@ func ExplorePackageLockJSON(file []byte) (*File, error) {
 		Name:              "package-lock.json",
 		Path:              "package-lock.json",
 		DependencyManager: DependencyManagerNPM,
-		Dependencies:      make([]*Dependency, 0, len(pkg.Dependencies)+len(pkg.DevDependencies)),
+		Dependencies:      make([]*Dependency, 0, pkg.Dependencies.Len()+pkg.DevDependencies.Len()),
 		Language: Language{
 			Name: LanguageNameJS,
 		},
 		Frameworks: make([]*Framework, 0),
 	}
 
-	result := make([]*Dependency, 0, len(pkg.Dependencies)+len(pkg.DevDependencies))
+	depFile.addDependenciesFromOrderedMap(pkg.Dependencies)
+	depFile.addDependenciesFromOrderedMap(pkg.DevDependencies)
 
-	for name, version := range pkg.Dependencies {
-		depFile.addDependency(name, version)
-	}
-
-	for name, version := range pkg.DevDependencies {
-		depFile.addDependency(name, version)
-	}
-
-	return &File{
-		Name:              "package-lock.json",
-		Path:              "package-lock.json",
-		DependencyManager: DependencyManagerNPM,
-		Dependencies:      result,
-		Language: Language{
-			Name: LanguageNameJS,
-		},
-	}, nil
+	return depFile, nil
 }

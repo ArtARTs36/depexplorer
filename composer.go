@@ -70,13 +70,8 @@ func ExploreComposerJSON(file []byte) (*File, error) {
 		Frameworks: make([]*Framework, 0),
 	}
 
-	for pair := definition.Require.Oldest(); pair != nil; pair = pair.Next() {
-		depFile.addDependency(pair.Key, pair.Value)
-	}
-
-	for pair := definition.RequireDev.Oldest(); pair != nil; pair = pair.Next() {
-		depFile.addDependency(pair.Key, pair.Value)
-	}
+	depFile.addDependenciesFromOrderedMap(definition.Require)
+	depFile.addDependenciesFromOrderedMap(definition.RequireDev)
 
 	return depFile, nil
 }

@@ -1,5 +1,7 @@
 package depexplorer
 
+import orderedmap "github.com/wk8/go-ordered-map/v2"
+
 type (
 	DependencyManager string
 	LanguageName      string
@@ -52,5 +54,12 @@ func (f *File) addDependency(name string, version string) {
 	framework, isFramework := dependencyToFramework(f.DependencyManager, dependency)
 	if isFramework {
 		f.Frameworks = append(f.Frameworks, framework)
+	}
+}
+
+// Add dependencies from map[name, version].
+func (f *File) addDependenciesFromOrderedMap(dependencies orderedmap.OrderedMap[string, string]) {
+	for pair := dependencies.Oldest(); pair != nil; pair = pair.Next() {
+		f.addDependency(pair.Key, pair.Value)
 	}
 }
