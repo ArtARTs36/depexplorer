@@ -11,31 +11,26 @@ func ExploreGoMod(file []byte) (*File, error) {
 		return nil, fmt.Errorf("failed to parse go.mod: %w", err)
 	}
 
-	deps := make([]*Dependency, len(mod.Require))
-	for i, require := range mod.Require {
-		deps[i] = &Dependency{
-			Name: require.Mod.Path,
-			Version: Version{
-				Full: require.Mod.Version,
-			},
-		}
+	depFile := &File{
+		Name:              "go.mod",
+		Path:              "go.mod",
+		DependencyManager: DependencyManagerGoMod,
+		Dependencies:      make([]*Dependency, 0, len(mod.Require)),
+		Language: Language{
+			Name: LanguageNameGo,
+		},
+		Frameworks: make([]*Framework, 0),
 	}
 
-	var goVersion *Version
+	for _, require := range mod.Require {
+		depFile.addDependency(require.Mod.Path, require.Mod.Version)
+	}
+
 	if mod.Go != nil {
-		goVersion = &Version{
+		depFile.Language.Version = &Version{
 			Full: mod.Go.Version,
 		}
 	}
 
-	return &File{
-		Name:              "go.mod",
-		Path:              "go.mod",
-		DependencyManager: DependencyManagerGoMod,
-		Dependencies:      deps,
-		Language: Language{
-			Name:    LanguageNameGo,
-			Version: goVersion,
-		},
-	}, nil
+	return depFile, nil
 }

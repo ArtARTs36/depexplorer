@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestExploreComposer(t *testing.T) {
+func TestExploreComposerJSON(t *testing.T) {
 	file := `{
     "name": "artarts36/local-file-system",
     "require": {
@@ -37,6 +37,7 @@ func TestExploreComposer(t *testing.T) {
 				Full: "8.1",
 			},
 		},
+		Frameworks: make([]*depexplorer.Framework, 0),
 	}
 
 	got, err := depexplorer.ExploreComposerJSON([]byte(file))

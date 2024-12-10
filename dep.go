@@ -24,7 +24,8 @@ type File struct {
 	DependencyManager DependencyManager
 	Dependencies      []*Dependency
 
-	Language Language
+	Language   Language
+	Frameworks []*Framework
 }
 
 type Language struct {
@@ -39,4 +40,17 @@ type Dependency struct {
 
 type Version struct {
 	Full string
+}
+
+func (f *File) addDependency(name string, version string) {
+	dependency := &Dependency{
+		Name:    name,
+		Version: Version{Full: version},
+	}
+	f.Dependencies = append(f.Dependencies, dependency)
+
+	framework, isFramework := dependencyToFramework(f.DependencyManager, dependency)
+	if isFramework {
+		f.Frameworks = append(f.Frameworks, framework)
+	}
 }

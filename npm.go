@@ -22,34 +22,26 @@ func ExplorePackageJSON(file []byte) (*File, error) {
 		return nil, fmt.Errorf("unable to parse npm definition: %w", err)
 	}
 
-	result := make([]*Dependency, 0, len(definition.Dependencies)+len(definition.DevDependencies))
-
-	addDep := func(name, version string) {
-		result = append(result, &Dependency{
-			Name: name,
-			Version: Version{
-				Full: version,
-			},
-		})
-	}
-
-	for name, version := range definition.Dependencies {
-		addDep(name, version)
-	}
-
-	for name, version := range definition.DevDependencies {
-		addDep(name, version)
-	}
-
-	return &File{
+	depFile := &File{
 		Name:              "package.json",
 		Path:              "package.json",
 		DependencyManager: DependencyManagerNPM,
-		Dependencies:      result,
+		Dependencies:      make([]*Dependency, 0, len(definition.Dependencies)+len(definition.DevDependencies)),
 		Language: Language{
 			Name: LanguageNameJS,
 		},
-	}, nil
+		Frameworks: make([]*Framework, 0),
+	}
+
+	for name, version := range definition.Dependencies {
+		depFile.addDependency(name, version)
+	}
+
+	for name, version := range definition.DevDependencies {
+		depFile.addDependency(name, version)
+	}
+
+	return depFile, nil
 }
 
 func ExplorePackageLockJSON(file []byte) (*File, error) {
@@ -69,23 +61,25 @@ func ExplorePackageLockJSON(file []byte) (*File, error) {
 		return nil, fmt.Errorf("no root package found in npm definition")
 	}
 
-	result := make([]*Dependency, 0, len(pkg.Dependencies)+len(pkg.DevDependencies))
-
-	addDep := func(name, version string) {
-		result = append(result, &Dependency{
-			Name: name,
-			Version: Version{
-				Full: version,
-			},
-		})
+	depFile := &File{
+		Name:              "package-lock.json",
+		Path:              "package-lock.json",
+		DependencyManager: DependencyManagerNPM,
+		Dependencies:      make([]*Dependency, 0, len(pkg.Dependencies)+len(pkg.DevDependencies)),
+		Language: Language{
+			Name: LanguageNameJS,
+		},
+		Frameworks: make([]*Framework, 0),
 	}
 
+	result := make([]*Dependency, 0, len(pkg.Dependencies)+len(pkg.DevDependencies))
+
 	for name, version := range pkg.Dependencies {
-		addDep(name, version)
+		depFile.addDependency(name, version)
 	}
 
 	for name, version := range pkg.DevDependencies {
-		addDep(name, version)
+		depFile.addDependency(name, version)
 	}
 
 	return &File{

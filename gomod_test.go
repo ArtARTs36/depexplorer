@@ -32,6 +32,7 @@ require golang.org/x/mod v0.22.0`
 				Full: "1.23.3",
 			},
 		},
+		Frameworks: make([]*depexplorer.Framework, 0),
 	}
 
 	got, err := depexplorer.ExploreGoMod([]byte(gomod))

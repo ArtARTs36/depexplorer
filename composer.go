@@ -57,35 +57,27 @@ func ExploreComposerJSON(file []byte) (*File, error) {
 		return nil, fmt.Errorf("unable to parse composer definition: %w", err)
 	}
 
-	result := make([]*Dependency, 0, len(definition.Require)+len(definition.RequireDev))
-
-	addDep := func(name, version string) {
-		result = append(result, &Dependency{
-			Name: name,
-			Version: Version{
-				Full: version,
-			},
-		})
-	}
-
-	for name, version := range definition.Require {
-		addDep(name, version)
-	}
-
-	for name, version := range definition.RequireDev {
-		addDep(name, version)
-	}
-
-	return &File{
+	depFile := &File{
 		Name:              "composer.json",
 		Path:              "composer.json",
 		DependencyManager: DependencyManagerComposer,
-		Dependencies:      result,
+		Dependencies:      make([]*Dependency, 0, len(definition.Require)+len(definition.RequireDev)),
 		Language: Language{
 			Name:    LanguageNamePHP,
 			Version: findPHPVersionInComposerJSON(definition),
 		},
-	}, nil
+		Frameworks: make([]*Framework, 0),
+	}
+
+	for name, version := range definition.Require {
+		depFile.addDependency(name, version)
+	}
+
+	for name, version := range definition.RequireDev {
+		depFile.addDependency(name, version)
+	}
+
+	return depFile, nil
 }
 
 func ExploreComposerLock(file []byte) (*File, error) {
@@ -96,16 +88,18 @@ func ExploreComposerLock(file []byte) (*File, error) {
 		return nil, fmt.Errorf("unable to parse composer definition: %w", err)
 	}
 
-	result := make([]*Dependency, 0, len(definition.Packages))
-	for i := 0; i < len(definition.Packages); i++ {
-		pkg := definition.Packages[i]
+	depFile := &File{
+		Name:              "composer.lock",
+		Path:              "composer.lock",
+		DependencyManager: DependencyManagerComposer,
+		Dependencies:      make([]*Dependency, 0, len(definition.Packages)),
+		Language: Language{
+			Name: LanguageNamePHP,
+		},
+	}
 
-		result = append(result, &Dependency{
-			Name: pkg.Name,
-			Version: Version{
-				Full: pkg.Version,
-			},
-		})
+	for _, pkg := range definition.Packages {
+		depFile.addDependency(pkg.Name, pkg.Version)
 	}
 
 	var phpVersion *Version
@@ -115,14 +109,7 @@ func ExploreComposerLock(file []byte) (*File, error) {
 		}
 	}
 
-	return &File{
-		Name:              "composer.lock",
-		Path:              "composer.lock",
-		DependencyManager: DependencyManagerComposer,
-		Dependencies:      result,
-		Language: Language{
-			Name:    LanguageNamePHP,
-			Version: phpVersion,
-		},
-	}, nil
+	depFile.Language.Version = phpVersion
+
+	return depFile, nil
 }
