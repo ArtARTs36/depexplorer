@@ -1,16 +1,19 @@
 package depexplorer_test
 
 import (
-	"github.com/artarts36/depexplorer"
-	"github.com/stretchr/testify/require"
 	"testing"
+
+	"github.com/stretchr/testify/require"
+
+	"github.com/artarts36/depexplorer"
 )
 
 func TestExploreComposerJSON(t *testing.T) {
 	file := `{
     "name": "artarts36/local-file-system",
     "require": {
-		"php": "8.1"
+		"php": "8.1",
+		"symfony/framework-bundle": "5.0.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5"
@@ -27,6 +30,10 @@ func TestExploreComposerJSON(t *testing.T) {
 				Version: depexplorer.Version{Full: "8.1"},
 			},
 			{
+				Name:    "symfony/framework-bundle",
+				Version: depexplorer.Version{Full: "5.0.0"},
+			},
+			{
 				Name:    "phpunit/phpunit",
 				Version: depexplorer.Version{Full: "^9.5"},
 			},
@@ -37,7 +44,14 @@ func TestExploreComposerJSON(t *testing.T) {
 				Full: "8.1",
 			},
 		},
-		Frameworks: make([]*depexplorer.Framework, 0),
+		Frameworks: []*depexplorer.Framework{
+			{
+				Name: depexplorer.FrameworkNameSymfony,
+				Version: depexplorer.Version{
+					Full: "5.0.0",
+				},
+			},
+		},
 	}
 
 	got, err := depexplorer.ExploreComposerJSON([]byte(file))

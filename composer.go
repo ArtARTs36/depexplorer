@@ -3,13 +3,14 @@ package depexplorer
 import (
 	"encoding/json"
 	"fmt"
+	orderedmap "github.com/wk8/go-ordered-map/v2"
 )
 
 const composerPHPDependency = "php"
 
 type composerJSON struct {
-	Require    map[string]string `json:"require"`
-	RequireDev map[string]string `json:"require-dev"`
+	Require    orderedmap.OrderedMap[string, string] `json:"require"`
+	RequireDev orderedmap.OrderedMap[string, string] `json:"require-dev"`
 
 	Config struct {
 		Platform map[string]string `json:"platform"`
@@ -32,15 +33,15 @@ func findPHPVersionInComposerJSON(definition composerJSON) *Version {
 		}
 	}
 
-	v = definition.Require[composerPHPDependency]
-	if v != "" {
+	v, ok := definition.Require.Get(composerPHPDependency)
+	if ok {
 		return &Version{
 			Full: v,
 		}
 	}
 
-	v = definition.RequireDev[composerPHPDependency]
-	if v != "" {
+	v, ok = definition.RequireDev.Get(composerPHPDependency)
+	if ok {
 		return &Version{
 			Full: v,
 		}
@@ -61,7 +62,7 @@ func ExploreComposerJSON(file []byte) (*File, error) {
 		Name:              "composer.json",
 		Path:              "composer.json",
 		DependencyManager: DependencyManagerComposer,
-		Dependencies:      make([]*Dependency, 0, len(definition.Require)+len(definition.RequireDev)),
+		Dependencies:      make([]*Dependency, 0, definition.Require.Len()+definition.RequireDev.Len()),
 		Language: Language{
 			Name:    LanguageNamePHP,
 			Version: findPHPVersionInComposerJSON(definition),
@@ -69,12 +70,12 @@ func ExploreComposerJSON(file []byte) (*File, error) {
 		Frameworks: make([]*Framework, 0),
 	}
 
-	for name, version := range definition.Require {
-		depFile.addDependency(name, version)
+	for pair := definition.Require.Oldest(); pair != nil; pair = pair.Next() {
+		depFile.addDependency(pair.Key, pair.Value)
 	}
 
-	for name, version := range definition.RequireDev {
-		depFile.addDependency(name, version)
+	for pair := definition.RequireDev.Oldest(); pair != nil; pair = pair.Next() {
+		depFile.addDependency(pair.Key, pair.Value)
 	}
 
 	return depFile, nil
