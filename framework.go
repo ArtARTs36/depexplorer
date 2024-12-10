@@ -3,7 +3,8 @@ package depexplorer
 type FrameworkName string
 
 const (
-	FrameworkNameGin FrameworkName = "Gin Web Framework"
+	FrameworkNameGin   FrameworkName = "Gin Web Framework"
+	FrameworkNameFiber               = "Fiber"
 
 	FrameworkNameSymfony FrameworkName = "Symfony"
 	FrameworkNameLaravel FrameworkName = "Laravel"
@@ -20,7 +21,8 @@ type Framework struct {
 var frameworksDepMap = map[DependencyManager]map[string]FrameworkName{
 	DependencyManagerNone: {},
 	DependencyManagerGoMod: {
-		"github.com/gin-gonic/gin": FrameworkNameGin,
+		"github.com/gin-gonic/gin":    FrameworkNameGin,
+		"github.com/gofiber/fiber/v2": FrameworkNameFiber,
 	},
 	DependencyManagerComposer: {
 		"symfony/framework-bundle": FrameworkNameSymfony,
