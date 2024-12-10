@@ -4,7 +4,7 @@ type FrameworkName string
 
 const (
 	FrameworkNameGin   FrameworkName = "Gin Web Framework"
-	FrameworkNameFiber               = "Fiber"
+	FrameworkNameFiber FrameworkName = "Fiber"
 
 	FrameworkNameSymfony FrameworkName = "Symfony"
 	FrameworkNameLaravel FrameworkName = "Laravel"
