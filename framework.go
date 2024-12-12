@@ -37,7 +37,7 @@ var frameworksDepMap = map[DependencyManager]map[string]FrameworkName{
 }
 
 func (f *Framework) String() string {
-	return fmt.Sprintf("%s %s", f.Name, f.Version)
+	return fmt.Sprintf("%s %s", f.Name, f.Version.String())
 }
 
 func dependencyToFramework(depManager DependencyManager, dep *Dependency) (*Framework, bool) {
