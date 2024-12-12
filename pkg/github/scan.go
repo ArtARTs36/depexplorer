@@ -14,7 +14,33 @@ type Repository struct {
 	Repo  string
 }
 
+type ScanRepositoryOpts struct {
+	Client *github.Client
+	Logger Logger
+}
+
 func ScanRepository(
+	ctx context.Context,
+	repo Repository,
+	opts *ScanRepositoryOpts,
+) (map[depexplorer.DependencyManager]*depexplorer.File, error) {
+	if opts == nil {
+		return scanRepository(ctx, github.NewClient(nil), repo, NoopLogger())
+	}
+
+	client := opts.Client
+	if client == nil {
+		client = github.NewClient(nil)
+	}
+	logger := opts.Logger
+	if logger == nil {
+		logger = NoopLogger()
+	}
+
+	return scanRepository(ctx, client, repo, logger)
+}
+
+func scanRepository(
 	ctx context.Context,
 	client *github.Client,
 	repository Repository,

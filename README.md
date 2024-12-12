@@ -1,11 +1,19 @@
 # depexplorer
 
+[![Godoc](http://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/artarts36/depexplorer) [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/artarts36/depexplorer/master/LICENSE)
+
 depexplorer - Go library for explore project dependencies from:
 - go.mod
 - composer.json
 - composer.lock
 - package.json
 - package-lock.json
+
+Result struct contains:
+- Name of dependency manager
+- List of dependencies and that versions
+- List of used frameworks
+- Name of programming language
 
 Install as: `go get github.com/artarts36/depexplorer`
 
