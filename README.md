@@ -68,6 +68,13 @@ func main() {
 
 ## Explore from GitHub Repository
 
+You need to install another package:
+```
+go get github.com/artarts36/depexplorer/pkg/github
+```
+
+And use this snippet:
+
 ```go
 package main
 
