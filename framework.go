@@ -1,5 +1,7 @@
 package depexplorer
 
+import "fmt"
+
 type FrameworkName string
 
 const (
@@ -32,6 +34,10 @@ var frameworksDepMap = map[DependencyManager]map[string]FrameworkName{
 		"vue":   FrameworkNameVueJS,
 		"react": FrameworkNameReact,
 	},
+}
+
+func (f *Framework) String() string {
+	return fmt.Sprintf("%s %s", f.Name, f.Version)
 }
 
 func dependencyToFramework(depManager DependencyManager, dep *Dependency) (*Framework, bool) {
