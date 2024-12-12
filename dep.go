@@ -63,3 +63,7 @@ func (f *File) addDependenciesFromOrderedMap(dependencies orderedmap.OrderedMap[
 		f.addDependency(pair.Key, pair.Value)
 	}
 }
+
+func (v *Version) String() string {
+	return v.Full
+}
