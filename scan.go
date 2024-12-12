@@ -32,7 +32,7 @@ func newDirProjectFileIterator(dir string) (*dirProjectFileIterator, error) {
 }
 
 func (i *dirProjectFileIterator) Next() (string, error) {
-	for i.index < len(i.items) {
+	for i.index < len(i.items)-1 {
 		i.index++
 
 		item := i.items[i.index]
@@ -50,7 +50,7 @@ func (i *dirProjectFileIterator) Read(filepath string) ([]byte, error) {
 	return os.ReadFile(filepath)
 }
 
-func ScanProjectDir(dir string) (*File, error) {
+func ScanProjectDir(dir string) (map[DependencyManager]*File, error) {
 	it, err := newDirProjectFileIterator(dir)
 	if err != nil {
 		return nil, err
@@ -65,29 +65,38 @@ func bytesContentExplorer(bytes []byte) fileContentExplorer {
 	}
 }
 
-func ScanProject(files ProjectFileIterator) (*File, error) {
-	var guessFile *guessedFile
+func ScanProject(files ProjectFileIterator) (map[DependencyManager]*File, error) {
+	guessedFiles := map[DependencyManager]*guessedFile{}
 
 	for path, err := files.Next(); err != io.EOF; path, err = files.Next() {
-		var guessErr error
-		guessFile, guessErr = guess(path)
+		guessFile, guessErr := guess(path)
 		if guessErr != nil {
 			continue
 		}
 
-		if guessFile.IsLockFile || !guessFile.CanHaveLockFile {
-			break
+		if gf, exists := guessedFiles[guessFile.DependencyManager]; !exists || !gf.IsLockFile {
+			guessedFiles[guessFile.DependencyManager] = guessFile
 		}
 	}
 
-	if guessFile == nil {
+	if len(guessedFiles) == 0 {
 		return nil, errors.New("no dependency files found")
 	}
 
-	fileContent, err := files.Read(guessFile.Path)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read file %q: %w", guessFile.Path, err)
+	depFiles := map[DependencyManager]*File{}
+	for _, guessFile := range guessedFiles {
+		fileContent, err := files.Read(guessFile.Path)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read file %q: %w", guessFile.Path, err)
+		}
+
+		depFile, err := exploreGuessedFile(guessFile, bytesContentExplorer(fileContent))
+		if err != nil {
+			return nil, err
+		}
+
+		depFiles[depFile.DependencyManager] = depFile
 	}
 
-	return exploreGuessedFile(guessFile, bytesContentExplorer(fileContent))
+	return depFiles, nil
 }

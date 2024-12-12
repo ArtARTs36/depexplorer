@@ -19,7 +19,7 @@ func ScanRepository(
 	client *github.Client,
 	repository Repository,
 	logger Logger,
-) (*depexplorer.File, error) {
+) (map[depexplorer.DependencyManager]*depexplorer.File, error) {
 	logger("listing repository files", map[string]interface{}{
 		"repo_owner": repository.Owner,
 		"repo_name":  repository.Repo,
