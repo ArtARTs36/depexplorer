@@ -12,7 +12,10 @@ func TestExploreGoMod(t *testing.T) {
 
 go 1.23.3
 
-require golang.org/x/mod v0.22.0`
+require (
+	golang.org/x/mod v0.22.0
+	github.com/gofiber/fiber/v2 v2.51.0
+)`
 
 	expected := &depexplorer.File{
 		Name:              "go.mod",
@@ -25,6 +28,12 @@ require golang.org/x/mod v0.22.0`
 					Full: "v0.22.0",
 				},
 			},
+			{
+				Name: "github.com/gofiber/fiber/v2",
+				Version: depexplorer.Version{
+					Full: "v2.51.0",
+				},
+			},
 		},
 		Language: depexplorer.Language{
 			Name: depexplorer.LanguageNameGo,
@@ -32,7 +41,14 @@ require golang.org/x/mod v0.22.0`
 				Full: "1.23.3",
 			},
 		},
-		Frameworks: make([]*depexplorer.Framework, 0),
+		Frameworks: []*depexplorer.Framework{
+			{
+				Name: depexplorer.FrameworkNameFiber,
+				Version: depexplorer.Version{
+					Full: "v2.51.0",
+				},
+			},
+		},
 	}
 
 	got, err := depexplorer.ExploreGoMod([]byte(gomod))
