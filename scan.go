@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 )
 
+var ErrDependencyFilesNotFound = errors.New("dependency files not found")
+
 type ProjectFileIterator interface {
 	Next() (string, error) // filepath, error
 	Read(filepath string) ([]byte, error)
@@ -68,7 +70,18 @@ func bytesContentExplorer(bytes []byte) fileContentExplorer {
 func ScanProject(files ProjectFileIterator) (map[DependencyManager]*File, error) {
 	guessedFiles := map[DependencyManager]*guessedFile{}
 
-	for path, err := files.Next(); err != io.EOF; path, err = files.Next() {
+	for hasNext := true; hasNext; {
+		path, err := files.Next()
+		if err != nil {
+			hasNext = false
+
+			if errors.Is(err, io.EOF) {
+				continue
+			}
+
+			return nil, fmt.Errorf("failed to iterate project file: %w", err)
+		}
+
 		guessFile, guessErr := guess(path)
 		if guessErr != nil {
 			continue
@@ -80,7 +93,7 @@ func ScanProject(files ProjectFileIterator) (map[DependencyManager]*File, error)
 	}
 
 	if len(guessedFiles) == 0 {
-		return nil, errors.New("no dependency files found")
+		return nil, ErrDependencyFilesNotFound
 	}
 
 	depFiles := map[DependencyManager]*File{}
