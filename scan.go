@@ -11,29 +11,29 @@ import (
 
 var ErrDependencyFilesNotFound = errors.New("dependency files not found")
 
-type ProjectFileIterator interface {
+type DirectoryFileIterator interface {
 	Next() (string, error) // filepath, error
 	Read(filepath string) ([]byte, error)
 }
 
-type dirProjectFileIterator struct {
+type localDirFileIterator struct {
 	dir string
 
 	items []os.DirEntry
 	index int
 }
 
-func newDirProjectFileIterator(dir string) (*dirProjectFileIterator, error) {
+func newDirProjectFileIterator(dir string) (*localDirFileIterator, error) {
 	items, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read directory %s: %w", dir, err)
 	}
 
-	it := &dirProjectFileIterator{dir: dir, items: items, index: -1}
+	it := &localDirFileIterator{dir: dir, items: items, index: -1}
 	return it, nil
 }
 
-func (i *dirProjectFileIterator) Next() (string, error) {
+func (i *localDirFileIterator) Next() (string, error) {
 	for i.index < len(i.items)-1 {
 		i.index++
 
@@ -48,7 +48,7 @@ func (i *dirProjectFileIterator) Next() (string, error) {
 	return "", io.EOF
 }
 
-func (i *dirProjectFileIterator) Read(filepath string) ([]byte, error) {
+func (i *localDirFileIterator) Read(filepath string) ([]byte, error) {
 	return os.ReadFile(filepath)
 }
 
@@ -58,7 +58,7 @@ func ScanProjectDir(dir string) (map[DependencyManager]*File, error) {
 		return nil, err
 	}
 
-	return ScanProject(it)
+	return ExploreDirectory(it)
 }
 
 func bytesContentExplorer(bytes []byte) fileContentExplorer {
@@ -67,7 +67,7 @@ func bytesContentExplorer(bytes []byte) fileContentExplorer {
 	}
 }
 
-func ScanProject(files ProjectFileIterator) (map[DependencyManager]*File, error) {
+func ExploreDirectory(files DirectoryFileIterator) (map[DependencyManager]*File, error) {
 	guessedFiles := map[DependencyManager]*guessedFile{}
 
 	for hasNext := true; hasNext; {
@@ -79,7 +79,7 @@ func ScanProject(files ProjectFileIterator) (map[DependencyManager]*File, error)
 				continue
 			}
 
-			return nil, fmt.Errorf("failed to iterate project file: %w", err)
+			return nil, fmt.Errorf("failed to iterate directory file: %w", err)
 		}
 
 		guessFile, guessErr := guess(path)

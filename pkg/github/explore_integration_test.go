@@ -9,16 +9,16 @@ import (
 
 	"github.com/artarts36/depexplorer"
 	"github.com/artarts36/depexplorer/pkg/github"
+	"github.com/artarts36/depexplorer/pkg/repository"
 )
 
 func TestScanThisRepository_Integration(t *testing.T) {
-	files, err := github.ScanRepository(
+	files, err := github.ExploreRepository(
 		context.Background(),
-		github.Repository{
+		repository.Repo{
 			Owner: "artarts36",
-			Repo:  "depexplorer",
+			Name:  "depexplorer",
 		},
-		nil,
 	)
 	require.NoError(t, err)
 	require.NotNil(t, files[depexplorer.DependencyManagerGoMod])
