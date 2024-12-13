@@ -2,7 +2,9 @@ module github.com/artarts36/depexplorer/pkg/repository
 
 go 1.23.3
 
-require github.com/artarts36/depexplorer v0.0.0-20241213230942-b5a3eb53d645
+replace github.com/artarts36/depexplorer => ./../..
+
+require github.com/artarts36/depexplorer v0.0.0-00010101000000-000000000000
 
 require (
 	github.com/bahlo/generic-list-go v0.2.0 // indirect

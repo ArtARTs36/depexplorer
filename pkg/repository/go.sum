@@ -1,5 +1,3 @@
-github.com/artarts36/depexplorer v0.0.0-20241213230942-b5a3eb53d645 h1:f7hPleOGh8zGXycU0YDwNDtALx1YMZbSxs1waZFOTys=
-github.com/artarts36/depexplorer v0.0.0-20241213230942-b5a3eb53d645/go.mod h1:XvF6agn6Z5vMssFHS0+NEdPqC1/8MGwOOMl2I/u4Zfg=
 github.com/bahlo/generic-list-go v0.2.0 h1:5sz/EEAK+ls5wF+NeqDpk5+iNdMDXrh3z3nPnH1Wvgk=
 github.com/bahlo/generic-list-go v0.2.0/go.mod h1:2KvAjgMlE5NNynlg/5iLrrCCZ2+5xWbdbCW3pNTGyYg=
 github.com/buger/jsonparser v1.1.1 h1:2PnMjfWD7wBILjqQbt530v576A/cAbQvEW9gGIpYMUs=
