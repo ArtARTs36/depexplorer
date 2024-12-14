@@ -90,19 +90,21 @@ import (
 	"context"
 	"fmt"
 	"github.com/artarts36/depexplorer/pkg/github"
+	"github.com/artarts36/depexplorer/pkg/repository"
 	githubClient "github.com/google/go-github/github"
 )
 
 func main() {
-	ghClient := githubClient.NewClient(nil)
-
-	file, _ := github.ScanRepository(context.Background(), ghClient, github.Repository{
+	files, _ := github.ExploreRepository(context.Background(), repository.Repo{
 		Owner: "artarts36",
 		Repo:  "depexplorer",
 	})
-	fmt.Println(file.DependencyManager)
-	for _, dep := range file.Dependencies {
-		fmt.Println(dep.Name, dep.Version.Full)
+	for _, file := range files {
+		fmt.Println(file.Name)
+		
+		for _, dep := range file.Dependencies {
+			fmt.Println(dep.Name, dep.Version.Full)
+        }
 	}
 }
 ```
