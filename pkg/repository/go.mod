@@ -4,7 +4,7 @@ go 1.23.3
 
 replace github.com/artarts36/depexplorer => ./../..
 
-require github.com/artarts36/depexplorer v0.0.0-00010101000000-000000000000
+require github.com/artarts36/depexplorer v0.1.0
 
 require (
 	github.com/bahlo/generic-list-go v0.2.0 // indirect
