@@ -12,7 +12,11 @@ type Explorer struct {
 	logger Logger
 }
 
-func NewExplorer(client Client, logger Logger) *Explorer {
+func NewExplorer(client Client) *Explorer {
+	return NewExplorerWithLogger(client, NoopLogger())
+}
+
+func NewExplorerWithLogger(client Client, logger Logger) *Explorer {
 	return &Explorer{client: client, logger: logger}
 }
 
