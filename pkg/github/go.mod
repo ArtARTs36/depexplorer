@@ -8,8 +8,8 @@ replace (
 )
 
 require (
-	github.com/artarts36/depexplorer v0.0.0-20241213230942-b5a3eb53d645
-	github.com/artarts36/depexplorer/pkg/repository v0.0.0-00010101000000-000000000000
+	github.com/artarts36/depexplorer v0.1.0
+	github.com/artarts36/depexplorer/pkg/repository v0.1.0
 	github.com/google/go-github/v67 v67.0.0
 	github.com/stretchr/testify v1.10.0
 )
