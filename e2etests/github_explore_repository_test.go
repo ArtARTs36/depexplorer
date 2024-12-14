@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/artarts36/depexplorer"
 	"github.com/artarts36/depexplorer/pkg/github"
+	repository_slog "github.com/artarts36/depexplorer/pkg/repository-slog"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
@@ -12,7 +13,7 @@ import (
 )
 
 func TestGithubExploreRepository(t *testing.T) {
-	explorer := repository.NewExplorer(github.NewClient(nil), NewRepositoryExplorerLogger())
+	explorer := repository.NewExplorer(github.NewClient(nil), repository_slog.New())
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

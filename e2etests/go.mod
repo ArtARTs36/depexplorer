@@ -5,12 +5,14 @@ go 1.23.3
 replace (
 	github.com/artarts36/depexplorer/pkg/github => ./../pkg/github
 	github.com/artarts36/depexplorer/pkg/repository => ./../pkg/repository
+	github.com/artarts36/depexplorer/pkg/repository-slog => ./../pkg/repository-slog
 )
 
 require (
 	github.com/artarts36/depexplorer v0.1.0
 	github.com/artarts36/depexplorer/pkg/github v0.0.0-00010101000000-000000000000
 	github.com/artarts36/depexplorer/pkg/repository v0.1.0
+	github.com/artarts36/depexplorer/pkg/repository-slog v0.0.0-00010101000000-000000000000
 	github.com/stretchr/testify v1.10.0
 )
 

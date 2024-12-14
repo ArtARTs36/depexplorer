@@ -1,12 +1,17 @@
-package e2etests
+package repository_slog
 
 import (
+	"fmt"
 	"log/slog"
 
 	"github.com/artarts36/depexplorer/pkg/repository"
 )
 
-func NewRepositoryExplorerLogger() repository.Logger {
+func New() repository.Logger {
+	return Prefix("")
+}
+
+func Prefix(prefix string) repository.Logger {
 	return func(s string, m map[string]interface{}) {
 		l := slog.Default()
 
@@ -14,6 +19,6 @@ func NewRepositoryExplorerLogger() repository.Logger {
 			l = l.With(slog.Any(k, v))
 		}
 
-		l.Info(s)
+		l.Info(fmt.Sprintf("%s%s", prefix, s))
 	}
 }
