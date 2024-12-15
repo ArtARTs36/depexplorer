@@ -12,13 +12,16 @@ import (
 	"github.com/artarts36/depexplorer/pkg/repository"
 )
 
-func TestGithubExploreRepository(t *testing.T) {
-	explorer := repository.NewExplorerWithLogger(github.NewClient(nil), repository_slog.New())
+func TestCompositeExploreRepository(t *testing.T) {
+	explorer := repository.NewExplorerWithLogger(repository.NewClientComposite(map[string]repository.Client{
+		"github.com": github.NewClient(nil),
+	}), repository_slog.New())
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	deps, err := explorer.ExploreRepository(ctx, repository.Repo{
+		Host:  "github.com",
 		Owner: "artarts36",
 		Name:  "depexplorer",
 	}, nil)

@@ -22,6 +22,10 @@ func NewClient(client *github.Client) *Client {
 	return &Client{client: client}
 }
 
+func NewClientWithToken(token string) *Client {
+	return NewClient(github.NewClient(nil).WithAuthToken(token))
+}
+
 func (c *Client) ListFiles(
 	ctx context.Context,
 	repo repository.Repo,
