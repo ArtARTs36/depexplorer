@@ -14,11 +14,11 @@ jobs:
     strategy:
       matrix:
         module:
-          - { name: main, dir: './' }
-          - { name: github, dir: './pkg/github' }
-          - { name: gitlab, dir: './pkg/gitlab' }
-          - { name: repository, dir: './pkg/repository' }
-          - { name: repository-slog, dir: './pkg/repository-slog' }
+          - { name: main, dir: '' }
+          - { name: github, dir: 'pkg/github' }
+          - { name: gitlab, dir: 'pkg/gitlab' }
+          - { name: repository, dir: 'pkg/repository' }
+          - { name: repository-slog, dir: 'pkg/repository-slog' }
 
     name: code-lint
     runs-on: ubuntu-latest
@@ -44,11 +44,22 @@ jobs:
           args: -v --timeout=10m --out-format=colored-line-number
 
   unit-test:
+    strategy:
+      matrix:
+        module:
+          - { name: main, dir: '' }
+          - { name: github, dir: 'pkg/github' }
+          - { name: gitlab, dir: 'pkg/gitlab' }
+          - { name: repository, dir: 'pkg/repository' }
+          - { name: repository-slog, dir: 'pkg/repository-slog' }
+
     name: unit-test
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
         uses: actions/checkout@v3
+        with:
+          path: ${{ matrix.module.dir }}
 
       - name: Set up Go
         uses: actions/setup-go@v4 # action page: <https://github.com/actions/setup-go>
@@ -59,4 +70,4 @@ jobs:
         run: go mod download
 
       - name: Run tests
-        run: go test ./...
+        run: go test ${{ matrix.module.dir }}/...
