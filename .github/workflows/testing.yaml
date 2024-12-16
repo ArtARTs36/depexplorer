@@ -2,7 +2,6 @@ name: testing
 
 on:
   push:
-  pull_request:
 
 permissions:
   contents: read
@@ -32,6 +31,9 @@ jobs:
         uses: actions/setup-go@v4 # action page: <https://github.com/actions/setup-go>
         with:
           go-version: stable
+
+      - name: print env
+        run: ls . ; echo ${GITHUB_WORKSPACE}
 
       - name: Install Go dependencies
         run: go mod download
