@@ -2,7 +2,6 @@ package gitlab
 
 import (
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"io"
 
@@ -59,8 +58,6 @@ func getFileContent(file *gitlab.File) ([]byte, error) {
 		return c, err
 	case "":
 		return []byte(file.Content), nil
-	case "none":
-		return nil, errors.New("unsupported content encoding: none, this may occur when file size > 1 MB, if that is the case consider using DownloadContents")
 	default:
 		return nil, fmt.Errorf("unsupported content encoding: %v", file.Encoding)
 	}

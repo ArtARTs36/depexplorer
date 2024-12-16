@@ -1,6 +1,7 @@
-package repository
+package repository_test
 
 import (
+	"github.com/artarts36/depexplorer/pkg/repository"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,12 +12,12 @@ func TestRepoFromURI(t *testing.T) {
 	cases := []struct {
 		Title    string
 		URI      string
-		Expected Repo
+		Expected repository.Repo
 	}{
 		{
 			Title: "parse simple github repository",
 			URI:   "https://github.com/ArtARTs36/depexplorer",
-			Expected: Repo{
+			Expected: repository.Repo{
 				Host:  "github.com",
 				Owner: "ArtARTs36",
 				Name:  "depexplorer",
@@ -26,7 +27,7 @@ func TestRepoFromURI(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.Title, func(t *testing.T) {
-			repo, err := NewRepoFromURI(c.URI)
+			repo, err := repository.NewRepoFromURI(c.URI)
 			require.NoError(t, err)
 			assert.Equal(t, c.Expected, repo)
 		})

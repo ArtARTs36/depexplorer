@@ -10,20 +10,45 @@ import (
 
 type Client struct {
 	client *gitlab.Client
+	opts   ClientOpts
 }
 
-func NewClient(client *gitlab.Client) *Client {
+type ClientOpts struct {
+	ListFilesPageSize    int
+	ListBranchesPageSize int
+}
+
+func fillClientOpts(opts *ClientOpts) ClientOpts {
+	const defaultListFilesPageSize = 100
+	const defaultListBranchesPageSize = 100
+
+	if opts == nil {
+		opts = &ClientOpts{}
+	}
+
+	if opts.ListFilesPageSize == 0 {
+		opts.ListFilesPageSize = defaultListFilesPageSize
+	}
+	if opts.ListBranchesPageSize == 0 {
+		opts.ListBranchesPageSize = defaultListBranchesPageSize
+	}
+
+	return *opts
+}
+
+func NewClient(client *gitlab.Client, opts *ClientOpts) *Client {
 	return &Client{
 		client: client,
+		opts:   fillClientOpts(opts),
 	}
 }
 
-func NewClientWithToken(token string) (*Client, error) {
+func NewClientWithToken(token string, opts *ClientOpts) (*Client, error) {
 	client, err := gitlab.NewClient(token)
 	if err != nil {
 		return nil, err
 	}
-	return NewClient(client), nil
+	return NewClient(client, opts), nil
 }
 
 func (c *Client) ListFiles(
@@ -35,7 +60,7 @@ func (c *Client) ListFiles(
 
 	listTreeOpts := &gitlab.ListTreeOptions{
 		ListOptions: gitlab.ListOptions{
-			PerPage: 100,
+			PerPage: c.opts.ListFilesPageSize,
 		},
 		Path: &opts.Directory,
 	}
@@ -55,7 +80,7 @@ func (c *Client) ListFiles(
 	}
 
 	return newFileIterator(nodes, func(path string) (*gitlab.File, error) {
-		node, _, fErr := c.client.RepositoryFiles.GetFile(projectID, "go.mod", &gitlab.GetFileOptions{
+		node, _, fErr := c.client.RepositoryFiles.GetFile(projectID, path, &gitlab.GetFileOptions{
 			Ref: &ref,
 		}, gitlab.WithContext(ctx))
 
@@ -66,7 +91,7 @@ func (c *Client) ListFiles(
 func (c *Client) getDefaultBranch(ctx context.Context, projectID string) (string, error) {
 	branches, _, err := c.client.Branches.ListBranches(projectID, &gitlab.ListBranchesOptions{
 		ListOptions: gitlab.ListOptions{
-			PerPage: 100,
+			PerPage: c.opts.ListBranchesPageSize,
 		},
 	}, gitlab.WithContext(ctx))
 	if err != nil {

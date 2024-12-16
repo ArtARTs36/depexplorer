@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/artarts36/depexplorer"
 	"github.com/artarts36/depexplorer/pkg/gitlab"
-	repository_slog "github.com/artarts36/depexplorer/pkg/repository-slog"
+	repository_slog "github.com/artarts36/depexplorer/pkg/repositoryslog"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
@@ -13,7 +13,7 @@ import (
 )
 
 func TestGitlabExploreRepository(t *testing.T) {
-	gitlabClient, err := gitlab.NewClientWithToken("")
+	gitlabClient, err := gitlab.NewClientWithToken("", nil)
 
 	explorer := repository.NewExplorerWithLogger(gitlabClient, repository_slog.New())
 

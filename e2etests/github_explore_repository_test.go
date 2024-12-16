@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/artarts36/depexplorer"
 	"github.com/artarts36/depexplorer/pkg/github"
-	repository_slog "github.com/artarts36/depexplorer/pkg/repository-slog"
+	repository_slog "github.com/artarts36/depexplorer/pkg/repositoryslog"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
