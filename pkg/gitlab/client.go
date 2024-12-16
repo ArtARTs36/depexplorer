@@ -29,23 +29,29 @@ func NewClientWithToken(token string) (*Client, error) {
 func (c *Client) ListFiles(
 	ctx context.Context,
 	repo repository.Repo,
-	dir string,
+	opts repository.ListRepoFilesOpts,
 ) (depexplorer.DirectoryFileIterator, error) {
 	projectID := c.createProjectID(repo)
 
-	nodes, _, err := c.client.Repositories.ListTree(projectID, &gitlab.ListTreeOptions{
-		Path: &dir,
+	listTreeOpts := &gitlab.ListTreeOptions{
 		ListOptions: gitlab.ListOptions{
 			PerPage: 100,
 		},
-	}, gitlab.WithContext(ctx))
+		Path: &opts.Directory,
+	}
+	ref := opts.Ref
+	if ref == "" {
+		var err error
+		ref, err = c.getDefaultBranch(ctx, projectID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to default branch: %w", err)
+		}
+	}
+	listTreeOpts.Ref = &ref
+
+	nodes, _, err := c.client.Repositories.ListTree(projectID, listTreeOpts, gitlab.WithContext(ctx))
 	if err != nil {
 		return nil, fmt.Errorf("list project tree: %w", err)
-	}
-
-	ref, err := c.getDefaultBranch(ctx, projectID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to default branch: %w", err)
 	}
 
 	return newFileIterator(nodes, func(path string) (*gitlab.File, error) {

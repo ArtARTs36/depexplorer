@@ -30,7 +30,10 @@ func (e *Explorer) ExploreRepository(
 		"repo_name":  repo.Name,
 	})
 
-	iterator, err := e.client.ListFiles(ctx, repo, opts.getDirectory())
+	iterator, err := e.client.ListFiles(ctx, repo, ListRepoFilesOpts{
+		Ref:       opts.getRef(),
+		Directory: opts.getDirectory(),
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to list repo files: %w", err)
 	}

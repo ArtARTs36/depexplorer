@@ -20,12 +20,12 @@ func NewClientComposite(clients map[string]Client) *ClientComposite {
 func (c *ClientComposite) ListFiles(
 	ctx context.Context,
 	repo Repo,
-	dir string,
+	opts ListRepoFilesOpts,
 ) (depexplorer.DirectoryFileIterator, error) {
 	client, ok := c.clients[repo.Host]
 	if !ok {
 		return nil, fmt.Errorf("no client found for host %q", repo.Host)
 	}
 
-	return client.ListFiles(ctx, repo, dir)
+	return client.ListFiles(ctx, repo, opts)
 }

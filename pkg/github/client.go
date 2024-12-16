@@ -29,26 +29,39 @@ func NewClientWithToken(token string) *Client {
 func (c *Client) ListFiles(
 	ctx context.Context,
 	repo repository.Repo,
-	dir string,
+	opts repository.ListRepoFilesOpts,
 ) (depexplorer.DirectoryFileIterator, error) {
+	githubOpts := &github.RepositoryContentGetOptions{
+		Ref: opts.Ref,
+	}
+
 	_, files, _, err := c.client.Repositories.GetContents(
 		ctx,
 		repo.Owner,
 		repo.Name,
-		dir,
-		nil,
+		opts.Directory,
+		githubOpts,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get contents from repo: %w", err)
 	}
 
 	return newFileIterator(files, func(path string) (*github.RepositoryContent, error) {
-		return c.getFile(ctx, repo, path)
+		return c.getFile(ctx, repo, path, opts)
 	}), nil
 }
 
-func (c *Client) getFile(ctx context.Context, repo repository.Repo, path string) (*github.RepositoryContent, error) {
-	file, _, _, err := c.client.Repositories.GetContents(ctx, repo.Owner, repo.Name, path, nil)
+func (c *Client) getFile(
+	ctx context.Context,
+	repo repository.Repo,
+	path string,
+	opts repository.ListRepoFilesOpts,
+) (*github.RepositoryContent, error) {
+	githubOpts := &github.RepositoryContentGetOptions{
+		Ref: opts.Ref,
+	}
+
+	file, _, _, err := c.client.Repositories.GetContents(ctx, repo.Owner, repo.Name, path, githubOpts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get contents for file %q: %v", path, err)
 	}
