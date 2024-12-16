@@ -14,10 +14,10 @@ jobs:
       matrix:
         module:
           - { name: main, dir: './' }
-          - { name: github, dir: './pkg/github' }
-          - { name: gitlab, dir: './pkg/gitlab' }
-          - { name: repository, dir: './pkg/repository' }
-          - { name: repository-slog, dir: './pkg/repository-slog' }
+          - { name: github, dir: './pkg/github/' }
+          - { name: gitlab, dir: './pkg/gitlab/' }
+          - { name: repository, dir: './pkg/repository/' }
+          - { name: repository-slog, dir: './pkg/repository-slog/' }
 
     name: code-lint
     runs-on: ubuntu-latest
