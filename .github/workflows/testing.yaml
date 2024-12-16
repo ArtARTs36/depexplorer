@@ -26,7 +26,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
         with:
-          path: ${{ matrix.dir }}
+          path: ${{ matrix.module.dir }}
 
       - name: Set up Go
         uses: actions/setup-go@v4 # action page: <https://github.com/actions/setup-go>
