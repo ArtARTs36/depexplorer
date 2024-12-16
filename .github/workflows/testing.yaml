@@ -33,7 +33,7 @@ jobs:
           go-version: stable
 
       - name: print env
-        run: ls . ; echo ws - ${GITHUB_WORKSPACE} ; echo pwd - ${PWD} ; ls ..
+        run: ls . ; ls ${{ matrix.module.dir }} ; echo ws - ${GITHUB_WORKSPACE} ; echo pwd - ${PWD} ; ls ..
 
       - name: Install Go dependencies
         run: go mod download
