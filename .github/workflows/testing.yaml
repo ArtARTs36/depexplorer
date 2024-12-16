@@ -24,19 +24,15 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-        with:
-          path: ${{ matrix.module.dir }}
 
       - name: Set up Go
         uses: actions/setup-go@v4 # action page: <https://github.com/actions/setup-go>
         with:
           go-version: stable
-
-      - name: print env
-        run: ls . ; ls ${{ matrix.module.dir }} ; echo ws - ${GITHUB_WORKSPACE} ; echo pwd - ${PWD} ; ls ..
+          cache-dependency-path: ${{ matrix.module.dir }}/go.sum
 
       - name: Install Go dependencies
-        run: go mod download
+        run: cd ${{ matrix.module.dir }} && go mod download
 
       - name: Run linter
         uses: golangci/golangci-lint-action@v4
@@ -60,16 +56,15 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-        with:
-          path: ${{ matrix.module.dir }}
 
       - name: Set up Go
         uses: actions/setup-go@v4 # action page: <https://github.com/actions/setup-go>
         with:
           go-version: stable
+          cache-dependency-path: ${{ matrix.module.dir }}/go.sum
 
       - name: Install Go dependencies
-        run: go mod download
+        run: cd ${{ matrix.module.dir }} && go mod download
 
       - name: Run tests
-        run: go test ./...
+        run: cd ${{ matrix.module.dir }} && go test ./...
