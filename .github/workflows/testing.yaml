@@ -25,9 +25,8 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-
-      - name: Cd to module
-        run: cd ${{ matrix.module.dir }}
+        with:
+          path: ${{ matrix.module.dir }}
 
       - name: Set up Go
         uses: actions/setup-go@v4 # action page: <https://github.com/actions/setup-go>
@@ -59,17 +58,18 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-
-      - name: Cd to module
-        run: cd ${{ matrix.module.dir }}
+        working-directory: $GITHUB_WORKSPACE/${{ matrix.module.dir }}
 
       - name: Set up Go
         uses: actions/setup-go@v4 # action page: <https://github.com/actions/setup-go>
+        working-directory: $GITHUB_WORKSPACE/${{ matrix.module.dir }}
         with:
           go-version: stable
 
       - name: Install Go dependencies
+        working-directory: $GITHUB_WORKSPACE/${{ matrix.module.dir }}
         run: go mod download
 
       - name: Run tests
+        working-directory: $GITHUB_WORKSPACE/${{ matrix.module.dir }}
         run: go test ./...
