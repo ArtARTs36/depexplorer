@@ -11,11 +11,22 @@ permissions:
 
 jobs:
   code-lint:
+    strategy:
+      matrix:
+        module:
+          - { name: main, dir: './' }
+          - { name: github, dir: './pkg/github' }
+          - { name: gitlab, dir: './pkg/gitlab' }
+          - { name: repository, dir: './pkg/repository' }
+          - { name: repository-slog, dir: './pkg/repository-slog' }
+
     name: code-lint
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          path: ${{ matrix.dir }}
 
       - name: Set up Go
         uses: actions/setup-go@v4 # action page: <https://github.com/actions/setup-go>
