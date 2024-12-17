@@ -23,17 +23,14 @@ jobs:
         id: get-modules
 
   code-lint:
-    strategy:
-      matrix:
-        module:
-          - { name: main, dir: './' }
-          - { name: github, dir: './pkg/github/' }
-          - { name: gitlab, dir: './pkg/gitlab/' }
-          - { name: repository, dir: './pkg/repository/' }
-          - { name: repository-slog, dir: './pkg/repository-slog/' }
-
     name: code-lint
     runs-on: ubuntu-latest
+    needs: detect-modules
+
+    strategy:
+      matrix:
+        module: ${{ fromJSON(needs.detect-modules.outputs.modules) }}
+
     steps:
       - name: Check out code
         uses: actions/checkout@v4
