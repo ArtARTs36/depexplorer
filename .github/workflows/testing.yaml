@@ -71,7 +71,7 @@ jobs:
           cache-dependency-path: ${{ matrix.module.dir }}/go.sum
 
       - name: Install Go dependencies
-        run: cd ${{ matrix.module.dir }} && go mod download
+        run: echo $PWD; ls -a .; ls -a ..; cd ${{ matrix.module.dir }} && go mod download
 
       - name: Run tests
         run: cd ${{ matrix.module.dir }} && go test ./...
