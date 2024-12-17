@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
+      - name: printenv
+        run: printenv | grep GITHUB_
       - name: Get GO modules
         uses: artarts36/go-modules-action@master
         id: get-modules
