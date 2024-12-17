@@ -17,7 +17,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
       - name: printenv
-        run: printenv | grep GITHUB_
+        run: echo $PWD; echo $GITHUB_WORKSPACE;
       - name: Get GO modules
         uses: artarts36/go-modules-action@master
         id: get-modules
