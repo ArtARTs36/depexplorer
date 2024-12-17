@@ -1,4 +1,4 @@
-package github
+package repository
 
 type Logger func(string, map[string]interface{})
 
