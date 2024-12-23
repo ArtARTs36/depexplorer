@@ -17,7 +17,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
       - name: Get GO modules
-        uses: ci-space/go-modules-action@master
+        uses: ci-space/go-modules-action@v0.1.0
         id: get-modules
 
   code-lint:
