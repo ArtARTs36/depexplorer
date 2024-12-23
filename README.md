@@ -158,7 +158,7 @@ func main() {
 }
 ```
 
-## Explore from Gitlab and Gitlab Repositories
+## Explore from GitHub and Gitlab Repositories
 
 You need to install another packages:
 ```
