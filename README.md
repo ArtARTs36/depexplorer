@@ -2,6 +2,10 @@
 
 [![Godoc](http://img.shields.io/badge/godoc-reference-blue.svg?style=flat)](https://godoc.org/github.com/artarts36/depexplorer) [![license](http://img.shields.io/badge/license-MIT-red.svg?style=flat)](https://raw.githubusercontent.com/artarts36/depexplorer/master/LICENSE)
 
+```
+go get github.com/artarts36/depexplorer
+```
+
 depexplorer - Go library for explore project dependencies from:
 - go.mod
 - composer.json
@@ -15,7 +19,12 @@ Result struct contains:
 - List of used frameworks
 - Name of programming language
 
-Install as: `go get github.com/artarts36/depexplorer`
+Repository structure:
+- `./`                    - main module with explore functions
+- `./pkg/repository`      - module for explore in repositories
+- `./pkg/github`          - module implements repository Client for GitHub
+- `./pkg/gitlab`          - module implements repository Client for Gitlab
+- `./pkg/repository-slog` - module implements slog adapter for repository logger
 
 ## Explore Go dependencies
 
@@ -76,8 +85,9 @@ func main() {
 
 ## Explore from GitHub Repository
 
-You need to install another package:
+You need to install another packages:
 ```
+go get github.com/artarts36/depexplorer/pkg/repository
 go get github.com/artarts36/depexplorer/pkg/github
 ```
 
@@ -95,16 +105,100 @@ import (
 )
 
 func main() {
-	files, _ := github.ExploreRepository(context.Background(), repository.Repo{
-		Owner: "artarts36",
-		Repo:  "depexplorer",
-	})
+	explorer := repository.NewExplorer(github.NewClient(nil))
+	
+	repo, _ := repository.NewRepoFromURI("https://github.com/artarts36/depexplorer")
+	
+	files, _ := explorer.ExploreRepository(context.Background(), repo, nil)
 	for _, file := range files {
 		fmt.Println(file.Name)
 		
 		for _, dep := range file.Dependencies {
 			fmt.Println(dep.Name, dep.Version.Full)
         }
+	}
+}
+```
+
+## Explore from Gitlab Repository
+
+You need to install another packages:
+```
+go get github.com/artarts36/depexplorer/pkg/repository
+go get github.com/artarts36/depexplorer/pkg/gitlab
+```
+
+And use this snippet:
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"github.com/artarts36/depexplorer/pkg/repository"
+	"github.com/artarts36/depexplorer/pkg/gitlab"
+)
+
+func main() {
+	client, _ := gitlab.NewClientWithToken("token", nil)
+	
+	explorer := repository.NewExplorer(client)
+	
+	repo, _ := repository.NewRepoFromURI("https://github.com/artarts36/depexplorer")
+	
+	files, _ := explorer.ExploreRepository(context.Background(), repo, nil)
+	for _, file := range files {
+		fmt.Println(file.Name)
+		
+		for _, dep := range file.Dependencies {
+			fmt.Println(dep.Name, dep.Version.Full)
+        }
+	}
+}
+```
+
+## Explore from Gitlab and Gitlab Repositories
+
+You need to install another packages:
+```
+go get github.com/artarts36/depexplorer/pkg/repository
+go get github.com/artarts36/depexplorer/pkg/github
+go get github.com/artarts36/depexplorer/pkg/gitlab
+```
+
+And use this snippet:
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"github.com/artarts36/depexplorer/pkg/github"
+	"github.com/artarts36/depexplorer/pkg/repository"
+	"github.com/artarts36/depexplorer/pkg/gitlab"
+)
+
+func main() {
+	clientsMap := map[string]repository.Client{
+		"github.com": github.NewClient(nil),
+	}
+
+	gitlabClient, _ := gitlab.NewClientWithToken("token", nil)
+	clientsMap["gitlab.com"] = gitlabClient
+
+	explorer := repository.NewExplorer(repository.NewClientComposite(clientsMap))
+
+	repo, _ := repository.NewRepoFromURI("https://github.com/artarts36/depexplorer")
+
+	files, _ := explorer.ExploreRepository(context.Background(), repo, nil)
+	for _, file := range files {
+		fmt.Println(file.Name)
+
+		for _, dep := range file.Dependencies {
+			fmt.Println(dep.Name, dep.Version.Full)
+		}
 	}
 }
 ```
